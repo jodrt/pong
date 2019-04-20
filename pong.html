@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Pong à l'ancienne</title>
+        <meta name="description" content="Just a pong game.">
+    </head>
+    <!-- This code has largely been inspired by Chris DeLeon's code proposed in there : 
+https://www.udemy.com/code-your-first-game/ -->
+
+    <body>
+        <canvas id="gameCanvas" width="1200" height="800"></canvas>    
+        
+        <script>
+            var canvas;
+            var canvasContext;
+            
+            canvas = document.getElementById('gameCanvas');
+            canvasContext = canvas.getContext('2d');
+            
+            var ballX = 400; /* Position initiale de la balle */
+            var ballY = 200;
+            
+            /* Vitesse initiale de la balle */
+            var ballSpeedX = 8; 
+            var ballSpeedY = 4;
+            
+            const PADDLE_HEIGHT = 100; // Hauteur de la raquette en pixels
+            const PADDLE_WIDTH = 25; // Largeur de la raquette en pixels
+            
+            const PADDLE_1_X = 20; /* Position de la raquette gauche par rapport au 
+            bord gauche */
+            var paddle1Y = 150; // Position verticale initiale de la raquette gauche
+            
+            const PADDLE_2_X = canvas.width - PADDLE_1_X - PADDLE_WIDTH; /* Position de 
+            la raquette droite par rapport au bord gauche */
+	        var paddle2Y = 350; // Position verticale initiale de la raquette droite
+            
+            var fps = 60; // Nombre d'appels à drawGame() par seconde
+            
+            window.onload = setInterval(function() {
+                drawGame();
+                moveBall();
+            }, 1000/fps);
+            
+            function drawGame() {
+                // Dessiner le fond noir du canvas
+                canvasContext.fillStyle = 'black';
+                canvasContext.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Dessiner la raquette gauche
+                canvasContext.fillStyle = 'white';
+                canvasContext.fillRect(PADDLE_1_X, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT);
+                
+                // Dessiner la raquette droite
+                canvasContext.fillStyle = 'white';
+                canvasContext.fillRect(PADDLE_2_X, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT);
+                
+                // Dessiner la balle
+                canvasContext.fillStyle = 'white';
+                canvasContext.fillRect(ballX, ballY, 15, 15);
+            }
+            
+            function moveBall() {
+                ballX += ballSpeedX;
+                ballY += ballSpeedY;
+                
+                /* Gestion des rebonds sur les boards horizontaux */
+                if((ballY > canvas.height) ||    
+                    (ballY < 0)) { 
+                        ballSpeedY = -ballSpeedY;
+                }
+                
+                /* Gestion des buts et rebonds */ 
+                /* Si balle à gauche, est-elle sur la raquette ?
+                Si oui, elle rebondit. */
+                if(ballX < PADDLE_1_X + PADDLE_WIDTH ){         
+                    if((ballY > paddle1Y) &&                    
+                        (ballY < paddle1Y + PADDLE_HEIGHT)) {
+                            ballSpeedX = -ballSpeedX;
+                    }
+                }
+                
+                /* Si balle à droite, est-elle sur
+                la raquette ? Si oui, elle rebondit. */
+                if(ballX > PADDLE_2_X) {                        
+                    if((ballY > paddle2Y) &&                    
+                       (ballY < paddle2Y + PADDLE_HEIGHT)) {
+                            ballSpeedX = -ballSpeedX;
+                    }
+                }
+            }
+            
+        </script>
+    </body>
+</html>
