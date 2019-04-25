@@ -18,8 +18,8 @@ https://www.udemy.com/code-your-first-game/ -->
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
             
-            var ballX = 400; /* Position initiale de la balle */
-            var ballY = 200;
+            var ballX = 600; /* Position initiale de la balle */
+            var ballY = 400;
             
             /* Vitesse initiale de la balle */
             var ballSpeedX = 8; 
@@ -35,6 +35,9 @@ https://www.udemy.com/code-your-first-game/ -->
             const PADDLE_2_X = canvas.width - PADDLE_1_X - PADDLE_WIDTH; /* Position de 
             la raquette droite par rapport au bord gauche */
 	        var paddle2Y = 350; // Position verticale initiale de la raquette droite
+            
+            var player1Score = 0; //Score des joueurs
+            var player2Score = 0;
             
             var fps = 60; // Nombre d'appels à drawGame() par seconde
             
@@ -59,6 +62,13 @@ https://www.udemy.com/code-your-first-game/ -->
                 // Dessiner la balle
                 canvasContext.fillStyle = 'white';
                 canvasContext.fillRect(ballX, ballY, 15, 15);
+                
+                // Afficher le score
+                canvasContext.fillStyle = "lightblue";
+                canvasContext.fillText("Player 1 Score", 150, 60);
+                canvasContext.fillText(player1Score, 150, 80);
+                canvasContext.fillText("Player 2 Score", canvas.width - 180, 60);
+                canvasContext.fillText(player2Score, canvas.width - 180, 80);
             }
             
             function moveBall() {
@@ -78,6 +88,11 @@ https://www.udemy.com/code-your-first-game/ -->
                     if((ballY > paddle1Y) &&                    
                         (ballY < paddle1Y + PADDLE_HEIGHT)) {
                             ballSpeedX = -ballSpeedX;
+                /* Si la balle n'est pas sur la raquette,
+                player 2 marque un but. */        
+                    } else if (ballX < 0) {
+                            player2Score++;
+                            centerBall();
                     }
                 }
                 
@@ -87,8 +102,21 @@ https://www.udemy.com/code-your-first-game/ -->
                     if((ballY > paddle2Y) &&                    
                        (ballY < paddle2Y + PADDLE_HEIGHT)) {
                             ballSpeedX = -ballSpeedX;
+                    } else if (ballX > canvas.width) {
+                            player1Score++;
+                            centerBall();
                     }
                 }
+            }
+            
+            // Remettre la balle au centre après un but.
+            function centerBall() {
+                ballX = canvas.width / 2;
+                ballY = canvas.height / 2;
+            
+                // La balle repart dans le sens opposé, horizontalement.
+                ballSpeedX = -ballSpeedX; 
+                ballSpeedY = 0;
             }
             
         </script>
