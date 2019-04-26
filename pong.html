@@ -18,8 +18,8 @@ https://www.udemy.com/code-your-first-game/ -->
             canvas = document.getElementById('gameCanvas');
             canvasContext = canvas.getContext('2d');
             
-            var ballX = 600; /* Position initiale de la balle */
-            var ballY = 400;
+            var ballX = canvas.width / 2; /* Position initiale de la balle */
+            var ballY = canvas.height / 2;
             
             /* Vitesse initiale de la balle */
             var ballSpeedX = 8; 
@@ -41,27 +41,32 @@ https://www.udemy.com/code-your-first-game/ -->
             
             var fps = 60; // Nombre d'appels à drawGame() par seconde
             
-            window.onload = setInterval(function() {
-                drawGame();
-                moveBall();
-            }, 1000/fps);
+            window.onload = function(){
+                setInterval(function() {
+                        drawGame();
+                        moveBall();
+                    }, 1000/fps);
+                /* On attend l'évènement 'mouvement de la souris' pour pouvoir la suivre */
+                canvas.addEventListener('mousemove', 
+                                        function(event) {
+                                            var mousePosition = CalcMousePos(event);
+                                            paddle1Y = mousePosition.y - (PADDLE_HEIGHT / 2) ;
+                                        });
+            }
+            
             
             function drawGame() {
                 // Dessiner le fond noir du canvas
-                canvasContext.fillStyle = 'black';
-                canvasContext.fillRect(0, 0, canvas.width, canvas.height);
-                
+                drawRect(0, 0, canvas.width, canvas.height, "black");
+               
                 // Dessiner la raquette gauche
-                canvasContext.fillStyle = 'white';
-                canvasContext.fillRect(PADDLE_1_X, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT);
-                
+                drawRect(PADDLE_1_X, paddle1Y, PADDLE_WIDTH, PADDLE_HEIGHT, "white"); 
+
                 // Dessiner la raquette droite
-                canvasContext.fillStyle = 'white';
-                canvasContext.fillRect(PADDLE_2_X, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT);
-                
+                drawRect(PADDLE_2_X, paddle2Y, PADDLE_WIDTH, PADDLE_HEIGHT, "white"); 
+
                 // Dessiner la balle
-                canvasContext.fillStyle = 'white';
-                canvasContext.fillRect(ballX, ballY, 15, 15);
+                drawCircle(ballX, ballY, 12, "white");
                 
                 // Afficher le score
                 canvasContext.fillStyle = "lightblue";
@@ -69,6 +74,20 @@ https://www.udemy.com/code-your-first-game/ -->
                 canvasContext.fillText(player1Score, 150, 80);
                 canvasContext.fillText("Player 2 Score", canvas.width - 180, 60);
                 canvasContext.fillText(player2Score, canvas.width - 180, 80);
+            }
+            
+            /* Dessiner les formes rectangulaires et les remplir d'une couleur */
+            function drawRect(originX, originY, width, height, color){
+                canvasContext.fillStyle = color;
+                canvasContext.fillRect(originX, originY, width, height);
+            }
+            
+            /* Dessiner les formes circulaires et les remplir d'une couleur */
+            function drawCircle(centerX, centerY, radius, color) {
+                canvasContext.fillStyle = color;
+                canvasContext.beginPath();
+                canvasContext.arc(centerX, centerY, radius, 0, 2*Math.PI, true); 
+                canvasContext.fill();
             }
             
             function moveBall() {
@@ -117,6 +136,20 @@ https://www.udemy.com/code-your-first-game/ -->
                 // La balle repart dans le sens opposé, horizontalement.
                 ballSpeedX = -ballSpeedX; 
                 ballSpeedY = 0;
+            }
+            
+            /* Gestion de la souris : la raquette doit suivre la
+            souris. On renvoie ses coordonnées à chaque évènement
+            event. */
+            function CalcMousePos(event){
+                var rect = canvas.getBoundingClientRect();
+                var root = document.documentElement;
+                var mouseX = event.clientX - rect.left - root.scrollLeft;
+                var mouseY = event.clientY - rect.top;
+                return {
+                        x:mouseX,
+                        y:mouseY
+                };
             }
             
         </script>
