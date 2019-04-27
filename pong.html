@@ -22,7 +22,7 @@ https://www.udemy.com/code-your-first-game/ -->
             var ballY = canvas.height / 2;
             
             /* Vitesse initiale de la balle */
-            var ballSpeedX = 8; 
+            var ballSpeedX = 5; 
             var ballSpeedY = 4;
             
             const PADDLE_HEIGHT = 100; // Hauteur de la raquette en pixels
@@ -30,7 +30,7 @@ https://www.udemy.com/code-your-first-game/ -->
             
             const PADDLE_1_X = 20; /* Position de la raquette gauche par rapport au 
             bord gauche */
-            var paddle1Y = 150; // Position verticale initiale de la raquette gauche
+            var paddle1Y = 150; // Position initiale verticale initiale de la raquette gauche
             
             const PADDLE_2_X = canvas.width - PADDLE_1_X - PADDLE_WIDTH; /* Position de 
             la raquette droite par rapport au bord gauche */
@@ -40,6 +40,7 @@ https://www.udemy.com/code-your-first-game/ -->
             var player2Score = 0;
             
             var fps = 60; // Nombre d'appels à drawGame() par seconde
+            
             
             window.onload = function(){
                 setInterval(function() {
@@ -94,9 +95,12 @@ https://www.udemy.com/code-your-first-game/ -->
                 ballX += ballSpeedX;
                 ballY += ballSpeedY;
                 
+                // Déplacements de la raquette droite
+                computerMovement();
+                
                 /* Gestion des rebonds sur les boards horizontaux */
-                if((ballY > canvas.height) ||    
-                    (ballY < 0)) { 
+                if(ballY > canvas.height ||    
+                   ballY < 0) { 
                         ballSpeedY = -ballSpeedY;
                 }
                 
@@ -104,9 +108,13 @@ https://www.udemy.com/code-your-first-game/ -->
                 /* Si balle à gauche, est-elle sur la raquette ?
                 Si oui, elle rebondit. */
                 if(ballX < PADDLE_1_X + PADDLE_WIDTH ){         
-                    if((ballY > paddle1Y) &&                    
-                        (ballY < paddle1Y + PADDLE_HEIGHT)) {
+                    if(ballY > paddle1Y &&                    
+                       ballY < paddle1Y + PADDLE_HEIGHT) {
                             ballSpeedX = -ballSpeedX;
+                            /* Gestion de la vitesse verticale : plus on frappe avec le bord de la raquette,
+                            plus la balle part vite du côté touché */
+                            var deltaY = ballY - (paddle1Y + PADDLE_HEIGHT / 2);
+                            ballSpeedY = deltaY * 0.2;
                 /* Si la balle n'est pas sur la raquette,
                 player 2 marque un but. */        
                     } else if (ballX < 0) {
@@ -118,9 +126,13 @@ https://www.udemy.com/code-your-first-game/ -->
                 /* Si balle à droite, est-elle sur
                 la raquette ? Si oui, elle rebondit. */
                 if(ballX > PADDLE_2_X) {                        
-                    if((ballY > paddle2Y) &&                    
-                       (ballY < paddle2Y + PADDLE_HEIGHT)) {
+                    if(ballY > paddle2Y &&                    
+                       ballY < paddle2Y + PADDLE_HEIGHT) {
                             ballSpeedX = -ballSpeedX;
+                            /* Gestion de la vitesse verticale : plus on frappe avec le bord de la raquette,
+                            plus la balle part vite du côté touché */
+                            var deltaY = ballY - (paddle2Y + PADDLE_HEIGHT / 2);
+                            ballSpeedY = deltaY * 0.2;
                     } else if (ballX > canvas.width) {
                             player1Score++;
                             centerBall();
@@ -150,6 +162,17 @@ https://www.udemy.com/code-your-first-game/ -->
                         x:mouseX,
                         y:mouseY
                 };
+            }
+            
+            // Mouvements automatiques de la deuxième raquette
+            // Si la balle est en dessous de la raquette, elle descend
+            // Si la balle est au dessus, la raquette remonte
+            function computerMovement(){
+                if(ballY > paddle2Y + (PADDLE_HEIGHT / 2) + 35){ 
+                    paddle2Y += 5;
+                } else if (ballY < paddle2Y + (PADDLE_HEIGHT / 2) - 35) { 
+                    paddle2Y -= 5;
+                }
             }
             
         </script>
