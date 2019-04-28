@@ -38,6 +38,9 @@ https://www.udemy.com/code-your-first-game/ -->
             
             var player1Score = 0; //Score des joueurs
             var player2Score = 0;
+            const MAX_SCORE = 10; // Score max au bout duquel on remet la partie à zéro
+            var victory = false; 
+        
             
             var fps = 60; // Nombre d'appels à drawGame() par seconde
             
@@ -70,11 +73,19 @@ https://www.udemy.com/code-your-first-game/ -->
                 drawCircle(ballX, ballY, 12, "white");
                 
                 // Afficher le score
-                canvasContext.fillStyle = "lightblue";
+                canvasContext.fillStyle = "white";
                 canvasContext.fillText("Player 1 Score", 150, 60);
                 canvasContext.fillText(player1Score, 150, 80);
                 canvasContext.fillText("Player 2 Score", canvas.width - 180, 60);
                 canvasContext.fillText(player2Score, canvas.width - 180, 80);
+                
+                // Si le score max est atteint, on arrête la partie
+                if(victory) {   
+                    canvasContext.fillStyle = "white";
+                    canvasContext.fillText("Victoire !", canvas.width / 2, canvas.height / 4);
+                    canvasContext.fillText("F5 pour continuer", canvas.width / 2, canvas.height / 4 + 30);
+                    return;
+                }
             }
             
             /* Dessiner les formes rectangulaires et les remplir d'une couleur */
@@ -92,6 +103,10 @@ https://www.udemy.com/code-your-first-game/ -->
             }
             
             function moveBall() {
+                if(victory) {   
+                    return;      // Si le score max est atteint, on arrête la partie
+                }
+                
                 ballX += ballSpeedX;
                 ballY += ballSpeedY;
                 
@@ -148,6 +163,14 @@ https://www.udemy.com/code-your-first-game/ -->
                 // La balle repart dans le sens opposé, horizontalement.
                 ballSpeedX = -ballSpeedX; 
                 ballSpeedY = 0;
+                
+                // Si un des joueurs atteint le score max, on remet la partie à zéro
+                if(player1Score >= MAX_SCORE || 
+                   player2Score >= MAX_SCORE) {
+                        player1Score = 0;
+                        player2Score = 0;
+                        victory = true;
+                }
             }
             
             /* Gestion de la souris : la raquette doit suivre la
